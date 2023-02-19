@@ -8,12 +8,12 @@ const StanfordMap = () => {
     const [map, setMap] = useState(null);
     const [markers, setMarkers] = useState([]);
 
-    const handleClick = (btn) => {
+    const handleClick = () => {
         handlePayment();
         // btn.removeEventListener("click", handleClick)
     }
 
-    const handlePayment = () => {
+    const handlePayment = (business) => {
         const settings = {
             async: true,
             crossDomain: true,
@@ -25,7 +25,8 @@ const StanfordMap = () => {
                 Authorization: '0d5fa59be2a7785a5ac5a4f6605b27e5:2aa10eb20520941bca2c4687e53b0bfd'
             },
             processData: false,
-            data: '{"recipient":"akotha12@gmail.com","name":"Akshay Kotha","amount":5,"description":"Test Payment"}'
+            data: `{"recipient":"akotha12@gmail.com","name":"${business.name}","amount":${+(business.price.split('$')
+            [1])},"description":"${business.product}"}`
         };
 
         $.ajax(settings).done(function (response) {
@@ -45,7 +46,8 @@ const StanfordMap = () => {
             // Add markers for local businesses
             const localBusinesses = [
                 {
-                    name: 'Stanford Coffee', location: [-122.1679, 37.4276],
+                    name: 'Stanford Coffee',
+                    location: [-122.1679, 37.4276],
                     product: 'Coffee',
                     price: '$3.50',
                 },
@@ -98,11 +100,11 @@ const StanfordMap = () => {
                 const div = document.createElement("div");
                 console.log({ div })
                 ReactDOM.render((
-                    <div class="popup-content">
-                        <h3>${business.name}</h3>
-                        <p><strong>Price:</strong> ${business.price}</p>
-                        <button id="buy-now" class="btn" onClick={e =>
-                            alert(e)
+                    <div className="popup-content">
+                        <h3>{business.name}</h3>
+                        <p><strong>Price:</strong> {business.price}</p>
+                        <button id="buy-now" onClick={e =>
+                            handlePayment(business)
                         }>Buy now</button>
                     </div>
                 ), div)
@@ -125,12 +127,12 @@ const StanfordMap = () => {
         }
 
         const btn = document.getElementsByClassName('btn')[0];
-        if (btn) {
-            btn.addEventListener('click', () => {
-                console.log('hi')
-                handlePayment()
-            })
-        }
+        // if (btn) {
+        //     btn.addEventListener('click', () => {
+        //         console.log('hi')
+        //         handlePayment()
+        //     })
+        // }
 
 
     }, [map]);
