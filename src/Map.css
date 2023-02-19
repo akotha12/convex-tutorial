@@ -22,3 +22,7 @@
 .mapboxgl-marker {
     z-index: 9999;
 }
+
+.popup-content {
+    width: 200px;
+}
