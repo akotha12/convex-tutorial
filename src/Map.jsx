@@ -39,8 +39,8 @@ const StanfordMap = () => {
             const map = new mapboxgl.Map({
                 container: 'map',
                 style: 'mapbox://styles/mapbox/streets-v11',
-                center: [-122.1708, 37.4241],
-                zoom: 13,
+                center: [-122.1708, 37.4391],
+                zoom: 12.5,
             });
 
             // Add markers for local businesses
@@ -105,8 +105,9 @@ const StanfordMap = () => {
                         <p><strong>Price:</strong> {business.price}</p>
                         <button id="buy-now" onClick={e =>
                             handlePayment(business)
+                            // alert("you bought { }")
                         }>Buy now</button>
-                    </div>
+                    </div >
                 ), div)
 
                 const marker = new mapboxgl.Marker()
