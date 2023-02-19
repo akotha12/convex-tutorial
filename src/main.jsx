@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from './Home';
 import Login from './Login';
 import Map from './Map';
+import Success from "./Sucess";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -22,6 +23,7 @@ ReactDOM.render(
           <Route path='' element={<Home />}></Route>
           <Route path='login' element={<Login />}></Route>
           <Route path='login/map' element={<Map />}></Route>
+          <Route path='success' element={<Success />}></Route>
         </Routes>
       </BrowserRouter>
     </ConvexProvider>
