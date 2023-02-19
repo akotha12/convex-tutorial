@@ -1,31 +1,37 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import mapboxgl from 'mapbox-gl';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 
-function handlePayment() {
-    const settings = {
-        async: true,
-        crossDomain: true,
-        url: 'http://localhost:8010/v3/check/digital',
-        method: 'POST',
-        headers: {
-            accept: 'application/json',
-            'content-type': 'application/json',
-            Authorization: '0d5fa59be2a7785a5ac5a4f6605b27e5:2aa10eb20520941bca2c4687e53b0bfd'
-        },
-        processData: false,
-        data: '{"recipient":"justpaul@umich.edu","name":"Justin Paul","amount":5,"description":"Test Payment"}'
-    };
-
-    $.ajax(settings).done(function (response) {
-        console.log(response);
-    });
-}
-
 const StanfordMap = () => {
     const [map, setMap] = useState(null);
     const [markers, setMarkers] = useState([]);
+
+    const handleClick = (btn) => {
+        handlePayment();
+        // btn.removeEventListener("click", handleClick)
+    }
+
+    const handlePayment = () => {
+        const settings = {
+            async: true,
+            crossDomain: true,
+            url: 'http://localhost:8010/v3/check/digital',
+            method: 'POST',
+            headers: {
+                accept: 'application/json',
+                'content-type': 'application/json',
+                Authorization: '0d5fa59be2a7785a5ac5a4f6605b27e5:2aa10eb20520941bca2c4687e53b0bfd'
+            },
+            processData: false,
+            data: '{"recipient":"akotha12@gmail.com","name":"Akshay Kotha","amount":5,"description":"Test Payment"}'
+        };
+
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+        });
+    }
 
     useEffect(() => {
         const initializeMap = () => {
@@ -39,37 +45,75 @@ const StanfordMap = () => {
             // Add markers for local businesses
             const localBusinesses = [
                 {
-                    name: 'Stanford Coffee',
-                    location: [-122.1679, 37.4276],
-                    product: 'Latte',
-                    price: '$4.50',
+                    name: 'Stanford Coffee', location: [-122.1679, 37.4276],
+                    product: 'Coffee',
+                    price: '$3.50',
                 },
                 {
                     name: "Hobee's",
                     location: [-122.1824, 37.4454],
-                    product: 'Pancakes',
-                    price: '$9.99',
+                    product: 'Blueberry Coffee Cake',
+                    price: '$4.95',
                 },
-                // Add more local businesses here
+                {
+                    name: 'The Prolific Oven',
+                    location: [-122.1664, 37.4449],
+                    product: 'Chocolate Croissant',
+                    price: '$3.95',
+                },
+                {
+                    name: 'Coupa Cafe',
+                    location: [-122.1708, 37.4276],
+                    product: 'Chai Latte',
+                    price: '$4.25',
+                },
+                {
+                    name: 'The Cheese House',
+                    location: [-122.1768, 37.4457],
+                    product: 'Gourmet Cheese Plate',
+                    price: '$15.99',
+                },
+                {
+                    name: "Ike's Love & Sandwiches",
+                    location: [-122.1765, 37.4485],
+                    product: "The Famous Ike's Sandwich",
+                    price: '$10.95',
+                },
+                {
+                    name: "Scotty's Corner Pub",
+                    location: [-122.1833, 37.4438],
+                    product: 'Fish and Chips',
+                    price: '$15.95',
+                },
+                {
+                    name: 'Channing House',
+                    location: [-122.1632, 37.4482],
+                    product: 'Salmon Filet',
+                    price: '$21.99',
+                },
             ];
 
+
             localBusinesses.forEach((business) => {
-                const popupHtml = `
-            <div class="popup-content">
-            <h3>${business.name}</h3>
-            <p><strong>Price:</strong> ${business.price}</p>
-            <button>Buy now</button>
-            </div>
-        `;
+                const div = document.createElement("div");
+                console.log({ div })
+                ReactDOM.render((
+                    <div class="popup-content">
+                        <h3>${business.name}</h3>
+                        <p><strong>Price:</strong> ${business.price}</p>
+                        <button id="buy-now" class="btn" onClick={e =>
+                            alert(e)
+                        }>Buy now</button>
+                    </div>
+                ), div)
 
                 const marker = new mapboxgl.Marker()
                     .setLngLat(business.location)
-                    .setPopup(new mapboxgl.Popup().setHTML(popupHtml))
+                    .setPopup(new mapboxgl.Popup().setDOMContent(div))
                     .addTo(map);
-
                 // Add event listener to each marker
-                marker.getElement().addEventListener('click', (event) => {
-                    event.stopPropagation();
+                marker.getElement().addEventListener('click', () => {
+                    marker.togglePopup();
                 });
             });
 
@@ -78,41 +122,18 @@ const StanfordMap = () => {
 
         if (!map) {
             initializeMap();
-        } else {
-            const handleClick = (event) => {
-                // Check if any existing markers are within 300 meters of the clicked location
-                const isNearbyMarker = markers.some((marker) => {
-                    const { lng, lat } = marker.getLngLat();
-                    const distance = marker.getLngLat().distance([event.lngLat.lng, event.lngLat.lat]);
-                    return distance < 300;
-                });
-
-                if (!isNearbyMarker) {
-                    // Add the new marker
-                    const newMarker = new mapboxgl.Marker().setLngLat(event.lngLat).addTo(map);
-
-                    const popupHtml = `
-      <div class="popup-content">
-        <h3><input type="text" placeholder="New Business" /></h3>
-        <p><strong>Product:</strong> <input type="text" placeholder="Product name" /></p>
-        <p><strong>Price:</strong> <input type="text" placeholder="Price" /></p>
-        <button id="buy-now">Buy now</button>
-      </div>
-    `;
-
-                    newMarker.setPopup(new mapboxgl.Popup().setHTML(popupHtml)).togglePopup();
-
-                    setMarkers((markers) => [...markers, newMarker]);
-                    // Find the button element and attach the event listener
-                    const button = document.getElementById('buy-now');
-                    button.addEventListener('click', handlePayment);
-                }
-            };
-
-
-            map.on('click', handleClick);
         }
-    }, [map, markers]);
+
+        const btn = document.getElementsByClassName('btn')[0];
+        if (btn) {
+            btn.addEventListener('click', () => {
+                console.log('hi')
+                handlePayment()
+            })
+        }
+
+
+    }, [map]);
 
     return <div id="map" style={{ height: '500px' }} />;
 };
